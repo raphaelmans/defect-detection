@@ -10,7 +10,7 @@ import random
 
 class VideoProcessorMaker:
     saved_records = []
-    threshold = 0.6
+    threshold = 0
     batch_number = None
 
     def __init__(self, batch_name) -> None:
@@ -23,7 +23,7 @@ class VideoProcessorMaker:
 
 class VideoProcessor:
     saved_records = []
-    threshold = 0.6
+    threshold = 0
     batch_number = None
     end_callback = None
 

@@ -1,0 +1,14 @@
+streamlit
+streamlit_webrtc
+numpy
+torch
+pandas
+pymongo
+torchvision
+opencv-python
+matplotlib
+ipython
+psutil
+pyyaml
+tqdm
+seaborn

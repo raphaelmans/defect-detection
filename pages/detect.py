@@ -17,6 +17,9 @@ if not hasattr(st, 'classifier'):
 
 batch_number = st.number_input(
     'Insert batch number', format="%d", value=1001, step=1)
+
+# batch_number = st.number_input(
+#     'Input Quantity', format="%d", value=1, step=10)
 if st.button('Submit'):
     st.write('Batch '+str(batch_number)+' would be recorded')
     st.session_state['item_batch_count'] += 1
