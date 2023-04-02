@@ -5,7 +5,7 @@ import json
 
 
 def flat_result_data(data):
-   return reduce(operator.iconcat, data, [])
+    return reduce(operator.iconcat, data, [])
 
 
 def filter_data_by_treshold(records, threshold):
@@ -22,7 +22,7 @@ def get_categories(data):
 
     return categories_found
 
-def export_to_json(data, file_number):
-    with open("./output/batch-"+str(file_number)+".json", "w") as outfile:
-        json.dump(data, outfile)
-    outfile.close()
+
+def export_to_json(json_str, file_number):
+    with open('./output/batch-'+str(file_number)+'.json', 'w') as f:
+        f.write(json_str)

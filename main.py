@@ -18,9 +18,6 @@ if 'item_batch_count' not in st.session_state:
 
 
 def main():
-    # with st.sidebar:
-    # dashboard_btn = st.button('Dashboard')
-    # detect_btn = st.button('Detect')
     st.header('Dashboard')
     with st.container():
         col1, col2, col3 = st.columns(3)
