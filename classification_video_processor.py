@@ -51,7 +51,7 @@ class VideoProcessor(VideoProcessorBase):
         if top_part_white_percent > st.white_threshold and bottom_part_white_percent > st.white_threshold:
             print("Object detected!")
 
-            if st.start_evaluate == True:
+            if st.model_evaluation == True:
                 if self.item_visible == False:
                     self.item_counter += 1
                     self.item_visible = True
@@ -72,12 +72,12 @@ class VideoProcessor(VideoProcessorBase):
             print("No object detected.")
             self.item_visible = False
 
-        if (st.bounding_boxes):
+        if (st.contact_lines):
             dp_img[:quarter_height][:, :] = [10, 10, 10]
             dp_img[-quarter_height:][:, :] = [10, 10, 10]
             return av.VideoFrame.from_ndarray(dp_img, format="bgr24")
 
-        if st.preview_binary_segmentation:
+        if st.binary_segmentation:
             return av.VideoFrame.from_ndarray(img_bw, format="gray")
         return av.VideoFrame.from_ndarray(dp_img, format="bgr24")
 
