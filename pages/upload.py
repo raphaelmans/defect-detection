@@ -4,12 +4,16 @@ from model import load_model, predict, evaluate
 import io
 import numpy as np
 from PIL import Image
+from features.upload.widgets import Widgets as Upload_Widgets
+from features.detection.widgets import Widgets as Detection_Widgets
 
+upload_widgets = Upload_Widgets()
+detection_widgets = Detection_Widgets()
 
-def load_image():
-    uploaded_file = st.file_uploader(label='Pick an image')
-    if uploaded_file is not None:
-        image_data = uploaded_file.getvalue()
+def handle_loaded_image():
+    image_loader = upload_widgets.upload_image_loader()
+    if image_loader is not None:
+        image_data = image_loader.getvalue()
         st.image(image_data)
         return Image.open(io.BytesIO(image_data))
     else:
@@ -18,7 +22,12 @@ def load_image():
 
 def main():
     model = load_model()
-    image = load_image()
+    
+    bs, cl = detection_widgets.preview_radio_button()
+    st.binary_segmentation = bs
+    st.contact_lines = cl
+
+    image = handle_loaded_image()
     if image is not None:
 
         print('========= Image Validation ==========')
