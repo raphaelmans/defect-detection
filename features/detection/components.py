@@ -2,11 +2,9 @@
 import streamlit as st
 
 
-
 class Components:
 
-    @staticmethod
-    def batch_button(batch_number):
+    def batch_button_submit(self, batch_number):
         # Handle [item_batch_count] click listener
         if st.button('Submit'):
             st.write('Batch '+str(batch_number)+' would be recorded')

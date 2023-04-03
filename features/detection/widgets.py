@@ -2,40 +2,42 @@
 import streamlit as st
 
 
-def init_widgets():
-    st.header('Defect Detection')
+class Widgets:
 
-    # Setup [batch_number] widget and state
-    st.number_input(
-        'Insert batch number', format="%d", value=1001, step=1, key='batch_number')
-    st.batch_number = st.session_state['batch_number']
+    def preview_radio_button(self):
+        preview = st.radio(
+            "Preview:",
+            ('None', 'Binary Segmentation', 'Contact Lines'))
 
-    # Setup [threshold] widget and state
-    st.slider("Black Binary Threshold",
-              value=175, max_value=255, min_value=1, key='threshold')
-    st.threshold = st.session_state['threshold']
+        binary_segmentation = preview == 'Binary Segmentation'
+        contact_lines = preview == 'Contact Lines'
 
-    # Setup [white_threshold] widget and state
-    st.slider(
-        "White Percentage Threshold",
-        value=5, max_value=100, min_value=1, key='white_threshold')
-    st.white_threshold = st.session_state['white_threshold']
+        return binary_segmentation, contact_lines
 
-    preview = st.radio(
-        "Preview:",
-        ('None', 'Binary Segmentation', 'Contact Lines'))
+    def white_threshold_slider(self):
+        # Setup [white_threshold] widget and state
+        white_threshold = st.slider(
+            "White Percentage Threshold",
+            value=5, max_value=100, min_value=1, key='white_threshold')
+        return white_threshold
 
-    st.binary_segmentation = preview == 'Binary Segmentation'
-    st.contact_lines = preview == 'Contact Lines'
+    def binary_threshold_slider(self):
+        # Setup [threshold] widget and state
+        binary_threshold = st.slider("Black Binary Threshold",
+                                     value=175, max_value=255, min_value=1, key='threshold')
+        return binary_threshold
 
-    # Setup [model_evaluation] widget and state
-    st.checkbox('Start Evaluation', key='model_evaluation')
-    st.model_evaluation = st.session_state['model_evaluation']
+    def batch_number_input(self):
+        # Setup [batch_number] widget and state
+        batch_number = st.number_input(
+            'Insert batch number', format="%d", value=1001, step=1, key='batch_number')
+        return batch_number
 
-    if 'item_batch_count' not in st.session_state:
-        st.session_state['item_batch_count'] = 0
+    def evaluation_checkbox(self):
+        # Setup [model_evaluation] widget and state
+        checkbox = st.checkbox('Start Evaluation', key='model_evaluation')
+        return checkbox
 
-
-def init_session_state():
-    if 'item_batch_count' not in st.session_state:
-        st.session_state['item_batch_count'] = 0
+    def init_session_state(self):
+        if 'item_batch_count' not in st.session_state:
+            st.session_state['item_batch_count'] = 0
