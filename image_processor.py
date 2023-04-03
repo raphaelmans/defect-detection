@@ -128,3 +128,13 @@ def check_image_section_is_not_black(img, section='top'):
     black_percentage = np.sum(black_mask == 255) / \
         (img_section.size[0] * img_section.size[1])
     return black_percentage
+
+
+def crop_only_contact_sections(binary_tresh_img, crop_percent = 0.1):
+    height, width = binary_tresh_img.shape[:2]
+    roi_top = int(crop_percent * height)
+    roi_bottom = int(1 - crop_percent * height)
+    mask = np.zeros((height, width), dtype=np.uint8)
+    mask[:roi_top, :] = 255
+    mask[roi_bottom:, :] = 255
+    return cv2.bitwise_and(binary_tresh_img, binary_tresh_img, mask=mask)
