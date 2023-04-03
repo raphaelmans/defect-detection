@@ -35,9 +35,9 @@ class VideoProcessor(VideoProcessorBase):
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
 
-        dp_img = frame.to_ndarray(format='bgr24')[:, ::-1, :]
+        display_img = frame.to_ndarray(format='bgr24')[:, ::-1, :]
 
-        gray_img = convert_nd_img_to_gray(dp_img)
+        gray_img = convert_nd_img_to_gray(display_img)
 
         _, img_bw = binary_image_apply_threshold(gray_img, st.threshold)
         quarter_height = int(0.1 * img_bw.shape[1])
@@ -73,13 +73,13 @@ class VideoProcessor(VideoProcessorBase):
             self.item_visible = False
 
         if (st.contact_lines):
-            dp_img[:quarter_height][:, :] = [10, 10, 10]
-            dp_img[-quarter_height:][:, :] = [10, 10, 10]
-            return av.VideoFrame.from_ndarray(dp_img, format="bgr24")
+            display_img[:quarter_height][:, :] = [10, 10, 10]
+            display_img[-quarter_height:][:, :] = [10, 10, 10]
+            return av.VideoFrame.from_ndarray(display_img, format="bgr24")
 
         if st.binary_segmentation:
             return av.VideoFrame.from_ndarray(img_bw, format="gray")
-        return av.VideoFrame.from_ndarray(dp_img, format="bgr24")
+        return av.VideoFrame.from_ndarray(display_img, format="bgr24")
 
     def on_ended(self):
         print('====Video End Callback====')
@@ -90,10 +90,7 @@ class VideoProcessor(VideoProcessorBase):
             if self.batch_number:
                 rand_number = self.batch_number
 
-            print("🚀 ~ file: classification_video_processor.py:77 ~ saved_records:",
-                  self.saved_records)
             json_str = json.dumps(self.saved_records)
-            print("🚀 ~ file: classification_video_processor.py:77 ~ json_str:", json_str)
 
             helper.export_to_json(json_str, rand_number)
 

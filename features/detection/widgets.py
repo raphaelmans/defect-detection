@@ -3,6 +3,7 @@ import streamlit as st
 
 
 def init_widgets():
+    st.header('Defect Detection')
 
     # Setup [batch_number] widget and state
     st.number_input(
@@ -20,13 +21,12 @@ def init_widgets():
         value=5, max_value=100, min_value=1, key='white_threshold')
     st.white_threshold = st.session_state['white_threshold']
 
-    # Setup [binary_segmentation] widget and state
-    st.checkbox('Preview Binary Segmentation', key='binary_segmentation')
-    st.binary_segmentation = st.session_state['binary_segmentation']
+    preview = st.radio(
+        "Preview:",
+        ('None', 'Binary Segmentation', 'Contact Lines'))
 
-    # Setup [contact_lines] widget and state
-    st.checkbox('Preview Contact Lines', key='contact_lines')
-    st.contact_lines = st.session_state['contact_lines']
+    st.binary_segmentation = preview == 'Binary Segmentation'
+    st.contact_lines = preview == 'Contact Lines'
 
     # Setup [model_evaluation] widget and state
     st.checkbox('Start Evaluation', key='model_evaluation')
