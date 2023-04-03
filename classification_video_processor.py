@@ -5,7 +5,7 @@ import numpy as np
 import av
 import streamlit as st
 from streamlit_webrtc import VideoProcessorBase
-from image_processor import binary_image_apply_threshold, convert_frame_to_gray, convert_nd_img_to_gray, crop_img_section, image_white_percentage, nd_img_rgb_to_bgr
+from image_processor import binary_image_apply_threshold, convert_frame_to_gray, convert_nd_img_to_gray, crop_img_section, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
 from model import predict, evaluate
 import random
 import helper
@@ -40,7 +40,6 @@ class VideoProcessor(VideoProcessorBase):
         gray_img = convert_nd_img_to_gray(display_img)
 
         _, img_bw = binary_image_apply_threshold(gray_img, st.threshold)
-        quarter_height = int(0.1 * img_bw.shape[1])
 
         top_part_white_percent = image_white_percentage(
             crop_img_section(Image.fromarray(img_bw), 0.1, 'top'))
@@ -73,9 +72,10 @@ class VideoProcessor(VideoProcessorBase):
             self.item_visible = False
 
         if (st.contact_lines):
-            display_img[:quarter_height][:, :] = [10, 10, 10]
-            display_img[-quarter_height:][:, :] = [10, 10, 10]
-            return av.VideoFrame.from_ndarray(display_img, format="bgr24")
+            masked_center_img = crop_only_contact_sections(
+                img_bw, crop_percent=0.1)
+                
+            return av.VideoFrame.from_ndarray(masked_center_img, format="gray")
 
         if st.binary_segmentation:
             return av.VideoFrame.from_ndarray(img_bw, format="gray")

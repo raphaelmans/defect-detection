@@ -7,10 +7,10 @@ class Widgets:
     def preview_radio_button(self):
         preview = st.radio(
             "Preview:",
-            ('None', 'Binary Segmentation', 'Contact Lines'))
+            ('None', 'Binary Segmentation', 'Contact Sections'))
 
         binary_segmentation = preview == 'Binary Segmentation'
-        contact_lines = preview == 'Contact Lines'
+        contact_lines = preview == 'Contact Sections'
 
         return binary_segmentation, contact_lines
 
