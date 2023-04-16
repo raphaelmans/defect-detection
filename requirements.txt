@@ -3,7 +3,6 @@ streamlit_webrtc
 numpy
 torch
 pandas
-pymongo
 torchvision
 opencv-python
 matplotlib
@@ -12,3 +11,4 @@ psutil
 pyyaml
 tqdm
 seaborn
+mysql-connector-python==8.0.32

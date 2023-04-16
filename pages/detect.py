@@ -1,4 +1,5 @@
 import streamlit as st
+from db import AppDatabase
 from model import load_model
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from classification_video_processor import ClassificationVideoProcessorMaker
@@ -6,15 +7,14 @@ from features.detection.widgets import Widgets as DetectionWidgets
 from features.detection.components import Components
 
 detection_widgets = DetectionWidgets()
-detection_widgets.init_session_state()
 
 components = Components()
 
 st.header('Defect Detection')
 
-batch_number = detection_widgets.batch_number_input()
-st.batch_number = batch_number
-components.batch_button_submit(batch_number)
+[bt_number] = AppDatabase.run_query_one(st.db_conn,"SELECT COUNT(*) FROM Batch")
+detection_widgets.batch_number_id(int(bt_number) + 1)
+st.batch_number = bt_number + 1
 
 threshold = detection_widgets.binary_threshold_slider()
 st.threshold = threshold

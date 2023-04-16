@@ -1,13 +1,10 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from db import AppDatabase
 
-
-
-
-# client = AppDatabase.init_connection()
-# print("=====DB CONNECTED=====")
-# print(client)
+st.db_conn = AppDatabase.init_connection()
+print("=====DB CONNECTED=====")
 
 
 if 'dirtyItemsCount' not in st.session_state:

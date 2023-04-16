@@ -1,14 +1,19 @@
-version: '3.7'
+version: "3.9"
+
 services:
-  mongodb_container:
-    image: mongo:6.0.3-focal
+  db:
+    image: mysql:8.0
+    container_name: pwbclassification-db
+    restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-    ports:
-      - 27017:27017
+      - MYSQL_DATABASE=pwbclassification
+      - MYSQL_ROOT_PASSWORD=123456
     volumes:
-      - mongodb_data_container:/data/db
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pwbclassification-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
 volumes:
-  mongodb_data_container:
+  pwbclassification-data:
+    driver: local
