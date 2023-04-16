@@ -4,6 +4,13 @@ import streamlit as st
 
 class Widgets:
 
+    def contact_orientation_radio_button(self):
+        orientation = st.radio(
+            "Orientation:",
+            ('Horizontal', 'Vertical'))
+
+        return orientation
+
     def preview_radio_button(self):
         preview = st.radio(
             "Preview:",

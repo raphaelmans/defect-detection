@@ -7,22 +7,29 @@ def nd_img_rgb_to_bgr(nd_img):
     return cv2.cvtColor(np.array(nd_img), cv2.COLOR_RGB2BGR)
 
 
-def check_image_is_valid(imgBGR24, threshold):
+def check_image_is_valid(imgBGR24, threshold, orientation='Vertical'):
     gray_img = convert_nd_img_to_gray(imgBGR24)
 
     _, img_bw = binary_image_apply_threshold(gray_img, threshold)
 
     binary_img = Image.fromarray(img_bw)
 
-    top_crop_img = crop_img_section(binary_img, 0.25, 'top')
-    top_part_white_percent = image_white_percentage(
-        top_crop_img)
+    first_wp = None
+    second_wp = None
+    if (orientation == 'Vertical'):
+        first_wp = image_white_percentage(
+            crop_img_section_y(binary_img, 0.25, 'top'))
 
-    bottom_crop_img = crop_img_section(binary_img, 0.25, 'bottom')
+        second_wp = image_white_percentage(
+            crop_img_section_y(binary_img, 0.25, 'bottom'))
+    else:
+        first_wp = image_white_percentage(
+            crop_img_section_x(binary_img, 0.25, 'left'))
 
-    bottom_part_white_percent = image_white_percentage(bottom_crop_img)
+        second_wp = image_white_percentage(
+            crop_img_section_x(binary_img, 0.25, 'right'))
 
-    return top_part_white_percent, bottom_part_white_percent
+    return first_wp, second_wp
 
 
 def convert_frame_to_gray(img_nd_array_bgr24):
@@ -50,7 +57,7 @@ def image_white_percentage(img: Image.Image):
     return percent_white
 
 
-def crop_img_section(img: Image.Image, percentage, part='top'):
+def crop_img_section_y(img: Image.Image, percentage, part='top'):
     height = img.size[1]
 
     # Define the top section of the image
@@ -64,6 +71,24 @@ def crop_img_section(img: Image.Image, percentage, part='top'):
 
     if (part == 'bottom'):
         img_section = img.crop((0, bottom_start, img.size[0], height))
+
+    return img_section
+
+
+def crop_img_section_x(img: Image.Image, percentage, part='left'):
+    width = img.size[0]
+
+    # Define the left section of the image
+    width_percent = int(percentage * width)
+
+    # Define the right section of the image
+    right_width = int(percentage * width)
+    right_start = width - right_width
+
+    img_section = img.crop((0, 0, width_percent, img.size[1]))
+
+    if (part == 'right'):
+        img_section = img.crop((right_start, 0, width, img.size[1]))
 
     return img_section
 
@@ -130,11 +155,20 @@ def check_image_section_is_not_black(img, section='top'):
     return black_percentage
 
 
-def crop_only_contact_sections(binary_tresh_img, crop_percent = 0.1):
-    height, width = binary_tresh_img.shape[:2]
-    roi_top = int(crop_percent * height)
-    roi_bottom = int(1 - crop_percent * height)
-    mask = np.zeros((height, width), dtype=np.uint8)
-    mask[:roi_top, :] = 255
-    mask[roi_bottom:, :] = 255
-    return cv2.bitwise_and(binary_tresh_img, binary_tresh_img, mask=mask)
+def crop_only_contact_sections(binary_tresh_img, crop_percent=0.1, orientation='Vertical'):
+    if (orientation == 'Vertical'):
+        height, width = binary_tresh_img.shape[:2]
+        roi_top = int(crop_percent * height)
+        roi_bottom = int(1 - crop_percent * height)
+        mask = np.zeros((height, width), dtype=np.uint8)
+        mask[:roi_top, :] = 255
+        mask[roi_bottom:, :] = 255
+        return cv2.bitwise_and(binary_tresh_img, binary_tresh_img, mask=mask)
+    else:
+        height, width = binary_tresh_img.shape[:2]
+        roi_left = int(crop_percent * width)
+        roi_right = int(1 - crop_percent * width)
+        mask = np.zeros((height, width), dtype=np.uint8)
+        mask[:, :roi_left] = 255
+        mask[:, roi_right:] = 255
+        return cv2.bitwise_and(binary_tresh_img, binary_tresh_img, mask=mask)

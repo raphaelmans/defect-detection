@@ -1,6 +1,6 @@
 import cv2
 import streamlit as st
-from image_processor import binary_image_apply_threshold, check_image_is_valid, convert_nd_img_to_gray, crop_img_section, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
+from image_processor import binary_image_apply_threshold, check_image_is_valid, convert_nd_img_to_gray, crop_img_section_x, crop_img_section_y, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
 from model import load_model, predict, evaluate
 import io
 import numpy as np
@@ -21,6 +21,8 @@ def main():
     white_threshold = detection_widgets.white_threshold_slider()
     st.white_threshold = white_threshold
 
+    contact_orientation = detection_widgets.contact_orientation_radio_button()
+    st.contact_orientation = contact_orientation
     bs, cl = detection_widgets.preview_radio_button()
 
     image = None
@@ -43,12 +45,20 @@ def main():
             _, img_bw = binary_image_apply_threshold(gray_img, st.threshold)
 
             masked_center_img = crop_only_contact_sections(
-                img_bw, crop_percent=0.1)
+                img_bw, crop_percent=0.1, orientation=st.contact_orientation)
 
-            top_wp = image_white_percentage(
-                crop_img_section(Image.fromarray(img_bw), 0.1, 'top'))
-            bot_wp = image_white_percentage(
-                crop_img_section(Image.fromarray(img_bw), 0.1, 'bottom'))
+            first_wp = None
+            second_wp = None
+            if (st.contact_orientation == 'Vertical'):
+                first_wp = image_white_percentage(
+                    crop_img_section_y(Image.fromarray(img_bw), 0.1, 'top'))
+                second_wp = image_white_percentage(
+                    crop_img_section_y(Image.fromarray(img_bw), 0.1, 'bottom'))
+            else:
+                first_wp = image_white_percentage(
+                    crop_img_section_x(Image.fromarray(img_bw), 0.1, 'left'))
+                second_wp = image_white_percentage(
+                    crop_img_section_x(Image.fromarray(img_bw), 0.1, 'right'))
 
             col1, col2 = st.columns(2)
 
@@ -59,8 +69,8 @@ def main():
 
             st.caption(
                 f"""
-                Top White Percentage: {top_wp}\n
-                Bottom White Percentage: {bot_wp}
+                Top White Percentage: {first_wp}\n
+                Bottom White Percentage: {second_wp}
                 """
             )
 

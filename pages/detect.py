@@ -22,6 +22,10 @@ st.threshold = threshold
 white_threshold = detection_widgets.white_threshold_slider()
 st.white_threshold = white_threshold
 
+
+contact_orientation = detection_widgets.contact_orientation_radio_button()
+st.contact_orientation = contact_orientation
+
 bs, cl = detection_widgets.preview_radio_button()
 st.binary_segmentation = bs
 st.contact_lines = cl

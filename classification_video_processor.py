@@ -5,7 +5,7 @@ import numpy as np
 import av
 import streamlit as st
 from streamlit_webrtc import VideoProcessorBase
-from image_processor import binary_image_apply_threshold, convert_frame_to_gray, convert_nd_img_to_gray, crop_img_section, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
+from image_processor import binary_image_apply_threshold, convert_frame_to_gray, convert_nd_img_to_gray, crop_img_section_x, crop_img_section_y, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
 from model import predict, evaluate
 import random
 import helper
@@ -41,13 +41,24 @@ class VideoProcessor(VideoProcessorBase):
 
         _, img_bw = binary_image_apply_threshold(gray_img, st.threshold)
 
-        top_part_white_percent = image_white_percentage(
-            crop_img_section(Image.fromarray(img_bw), 0.1, 'top'))
+        contact_orientation = st.contact_orientation
 
-        bottom_part_white_percent = image_white_percentage(
-            crop_img_section(Image.fromarray(img_bw), 0.1, 'bottom'))
+        first_part_white_percent = None
+        second_part_white_percent = None
+        if (contact_orientation == 'Vertical'):
+            first_part_white_percent = image_white_percentage(
+                crop_img_section_y(Image.fromarray(img_bw), 0.1, 'top'))
 
-        if top_part_white_percent > st.white_threshold and bottom_part_white_percent > st.white_threshold:
+            second_part_white_percent = image_white_percentage(
+                crop_img_section_y(Image.fromarray(img_bw), 0.1, 'bottom'))
+        else:
+            first_part_white_percent = image_white_percentage(
+                crop_img_section_x(Image.fromarray(img_bw), 0.1, 'left'))
+
+            second_part_white_percent = image_white_percentage(
+                crop_img_section_x(Image.fromarray(img_bw), 0.1, 'right'))
+
+        if first_part_white_percent > st.white_threshold and second_part_white_percent > st.white_threshold:
             print("Object detected!")
 
             if st.model_evaluation == True:
@@ -73,8 +84,8 @@ class VideoProcessor(VideoProcessorBase):
 
         if (st.contact_lines):
             masked_center_img = crop_only_contact_sections(
-                img_bw, crop_percent=0.1)
-                
+                img_bw, crop_percent=0.1, orientation=str(st.contact_orientation))
+
             return av.VideoFrame.from_ndarray(masked_center_img, format="gray")
 
         if st.binary_segmentation:
