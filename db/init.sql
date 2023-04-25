@@ -11,8 +11,8 @@ CREATE TABLE Batch (
 -- Create ClassificationResult table
 CREATE TABLE ClassificationResult (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    class VARCHAR(10),
+    class_name VARCHAR(10),
     batch_id INT,
     created_at TIMESTAMP,
     FOREIGN KEY (batch_id) REFERENCES Batch(id)
-);
+) AUTO_INCREMENT=1;

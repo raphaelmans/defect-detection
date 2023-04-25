@@ -1,9 +1,11 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 from db import AppDatabase
+from features.dashboard.widgets import DashboardWidgets
 
-st.db_conn = AppDatabase.init_connection()
+db_conn = AppDatabase.init_connection()
+st.db_conn = db_conn
+
+cursor = db_conn.cursor()
 print("=====DB CONNECTED=====")
 
 
@@ -16,35 +18,21 @@ if 'item_batch_count' not in st.session_state:
 
 def main():
     st.header('Dashboard')
+
+
+    fig_time_chart = DashboardWidgets.defect_rate_over_time_chart(db_conn)
+    st.plotly_chart(fig_time_chart)
+
+
     with st.container():
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
+        fig_rate_per_batch = DashboardWidgets.defect_rate_per_batch_chart(db_conn)
 
+        fig_rate_by_product_model = DashboardWidgets.defect_rate_by_product_model(db_conn)
         with col1:
-            st.metric("Items Scanned", 8)
+            st.plotly_chart(fig_rate_per_batch)
         with col2:
-            st.metric("Defect Items", 3)
-        with col3:
-            st.metric("Clean Items", 5)
-
-        with st.container():
-            col4, col5, col6 = st.columns(3)
-            with col5:
-                st.metric("Overall Performance", str((5/8) * 100) + "%")
-
-    # rnd_chart = np.random.randn(20, 3)
-    chart_data = pd.DataFrame(
-        [[1, 1, 0],
-         [2, 2, 0],
-         [3, 2, 1],
-         [4, 2, 2],
-         [5, 3, 2],
-         [6, 4, 2],
-         [7, 5, 2],
-         [8, 5, 3]
-         ],
-        columns=['Items Scanned', 'Clean Items', 'Defect Items'])
-
-    st.line_chart(chart_data)
+            st.plotly_chart(fig_rate_by_product_model)
 
 
 if __name__ == '__main__':

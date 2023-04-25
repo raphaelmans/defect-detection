@@ -12,3 +12,4 @@ pyyaml
 tqdm
 seaborn
 mysql-connector-python==8.0.32
+plotly==5.14.1

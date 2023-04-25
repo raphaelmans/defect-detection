@@ -1,26 +1,33 @@
 
 from PIL import Image
-import cv2
-import numpy as np
 import av
 import streamlit as st
 from streamlit_webrtc import VideoProcessorBase
-from image_processor import binary_image_apply_threshold, convert_frame_to_gray, convert_nd_img_to_gray, crop_img_section_x, crop_img_section_y, crop_only_contact_sections, image_white_percentage, nd_img_rgb_to_bgr
+from db import AppDatabase
+from features.models.batch import BatchInsertDTO, insert_new_batch
+from features.models.classification_result import save_class_results_to_db
+from image_processor import binary_image_apply_threshold,  convert_nd_img_to_gray, crop_img_section_x, crop_img_section_y, crop_only_contact_sections, image_white_percentage
 from model import predict, evaluate
-import random
 import helper
-import json
+
 
 
 class ClassificationVideoProcessorMaker:
     saved_records = []
     batch_number = None
+    database = None
 
-    def __init__(self, batch_name) -> None:
-        self.batch_number = batch_name
+    def __init__(self, database) -> None:
+        self.database = database
+        [bt_number] = AppDatabase.run_query_one_no_cache(database,"SELECT COUNT(*) FROM Batch")
+        btch_number = bt_number + 1
+        print("🚀 ~ file: classification_video_processor.py:27 ~ bt_number:", btch_number)
+        self.batch_number = btch_number
+
 
     def make(self):
         VideoProcessor.batch_number = self.batch_number
+        VideoProcessor.database = self.database
         return VideoProcessor
 
 
@@ -28,7 +35,7 @@ class VideoProcessor(VideoProcessorBase):
     saved_records = {}
     batch_number = None
     end_callback = None
-    db_enabled = True
+    database = None
 
     item_counter = 0
     item_visible = False
@@ -65,18 +72,15 @@ class VideoProcessor(VideoProcessorBase):
                 if self.item_visible == False:
                     self.item_counter += 1
                     self.item_visible = True
-                if self.db_enabled:
                     frame_parsed = frame.to_ndarray(format="rgb24")
                     actual_img = Image.fromarray(frame_parsed, mode='RGB')
                     result = predict(st.model, actual_img)
-                    eval_result = evaluate(st.model, result)
-                    self.saved_records[self.item_counter] = [eval_result]
+                    eval_result = evaluate(st.model, result, self.batch_number)
+                    self.saved_records[self.item_counter] = eval_result.to_dict(
+                    )
 
                     if self.saved_records[self.item_counter] is None:
-                        self.saved_records[self.item_counter] = [eval_result]
-                    else:
-                        self.saved_records[self.item_counter].append(
-                            eval_result)
+                        self.saved_records[self.item_counter] = eval_result.to_dict()
 
         else:
             print("No object detected.")
@@ -94,16 +98,17 @@ class VideoProcessor(VideoProcessorBase):
 
     def on_ended(self):
         print('====Video End Callback====')
+    
+        batch_dto = BatchInsertDTO(
+            date=helper.get_mysql_timestamp(),
+            batch_name=st.batch_name,
+            product_model=st.product_model,
+            department=st.department,
+            total_items=self.item_counter
+        )
+        insert_new_batch(batch_dto, self.database)
 
-        if self.db_enabled:
-            rand_number = random.randint(100000, 1000000)
-
-            if self.batch_number:
-                rand_number = self.batch_number
-
-            json_str = json.dumps(self.saved_records)
-
-            helper.export_to_json(json_str, rand_number)
+        save_class_results_to_db(self.saved_records, self.database)
 
         print('item counter: ', self.item_counter)
         print('====ON END====')

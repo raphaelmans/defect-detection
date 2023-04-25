@@ -1,7 +1,7 @@
-
+import statistics
 from functools import reduce
 import operator
-import json
+from datetime import datetime
 
 
 def flat_result_data(data):
@@ -26,3 +26,16 @@ def get_categories(data):
 def export_to_json(json_str, file_number):
     with open('./output/batch-'+str(file_number)+'.json', 'w') as f:
         f.write(json_str)
+
+
+def get_mysql_timestamp():
+    # Get the current datetime object
+    now = datetime.now()
+
+    # Format the datetime object as a MySQL timestamp string
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Return the timestamp string
+    return timestamp
+
+
