@@ -11,18 +11,18 @@ class Utils:
 
     def get_defect_rate_per_batch(self):
         query = DB_Queries.defect_rate_per_batch_query()
-        res = AppDatabase.run_query_one_no_cache(self.database, query)
+        res = AppDatabase.run_query_all_no_cache(self.database, query)
         print("🚀 ~ file: utils.py:17 ~ res:", res)
         return res
 
     def get_defect_rate_over_time(self):
         query = DB_Queries.defect_rate_over_time_query()
-        res = AppDatabase.run_query_one_no_cache(self.database, query)
+        res = AppDatabase.run_query_all_no_cache(self.database, query)
         print("🚀 ~ file: utils.py:25 ~ res:", res)
         return res
 
     def get_defect_rate_by_product_model(self):
         query = DB_Queries.defect_rate_by_product_model_query()
-        res = AppDatabase.run_query_one_no_cache(self.database, query)
+        res = AppDatabase.run_query_all_no_cache(self.database, query)
         print("🚀 ~ file: utils.py:38 ~ res:", res)
         return res

@@ -28,9 +28,17 @@ class AppDatabase:
             return res
 
     @st.cache_data(ttl=20)
-    def run_query_one_no_cache(_conn, query):
+    def run_query_all_no_cache(_conn, query):
         with _conn.cursor() as cur:
             cur.execute(query)
             res = cur.fetchall()
+            cur.close()
+            return res
+        
+    @st.cache_data(ttl=20)
+    def run_query_one_no_cache(_conn, query):
+        with _conn.cursor() as cur:
+            cur.execute(query)
+            res = cur.fetchone()
             cur.close()
             return res

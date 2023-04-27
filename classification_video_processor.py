@@ -21,7 +21,6 @@ class ClassificationVideoProcessorMaker:
         self.database = database
         [bt_number] = AppDatabase.run_query_one_no_cache(database,"SELECT COUNT(*) FROM Batch")
         btch_number = bt_number + 1
-        print("🚀 ~ file: classification_video_processor.py:27 ~ bt_number:", btch_number)
         self.batch_number = btch_number
 
 
