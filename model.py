@@ -33,7 +33,7 @@ def predict(model, image):
     return output
 
 
-def evaluate(model, result, batch_id)->ClassificationResultInsertDTO:
+def evaluate(model, result, batch_id) -> ClassificationResultInsertDTO:
     pred = F.softmax(result, dim=1)
 
     for i, prob in enumerate(pred):
@@ -47,5 +47,20 @@ def evaluate(model, result, batch_id)->ClassificationResultInsertDTO:
             created_at=get_mysql_timestamp(),
             batch_id=batch_id
         )
-    
+
+        return eval_result
+
+
+def evaluate(model, result):
+    pred = F.softmax(result, dim=1)
+
+    for i, prob in enumerate(pred):
+        top5i = prob.argsort(0, descending=True)[:1].tolist()
+        test_res = top5i[0]
+        label = model.names[test_res]
+        prob_result = prob[test_res]
+        eval_result = {
+            "label": label,
+            "probability": prob_result.item()
+        }
         return eval_result
