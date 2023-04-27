@@ -6,6 +6,11 @@ from features.models.classification_result import ClassificationResultInsertDTO
 
 from helper import get_mysql_timestamp
 
+# Uncomment if running on Windows.
+# import pathlib
+
+# temp = pathlib.PosixPath
+# pathlib.PosixPath = pathlib.WindowsPath
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
