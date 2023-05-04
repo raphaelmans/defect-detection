@@ -7,7 +7,7 @@ class Widgets:
     def contact_orientation_radio_button(self):
         orientation = st.radio(
             "Orientation:",
-            ('Horizontal', 'Vertical'))
+            ('Vertical', 'Horizontal',))
 
         return orientation
 
@@ -39,7 +39,7 @@ class Widgets:
         batch_number = st.number_input(
             'Insert batch number', format="%d", value=value, disabled=True, key='batch_number')
         return batch_number
-    
+
     def batch_number_id(self, value):
         # Setup [batch_number] widget and state
         batch_number = st.text(f'Batch ID: {value}')
@@ -50,27 +50,26 @@ class Widgets:
         checkbox = st.checkbox('Start Evaluation', key='model_evaluation')
         return checkbox
 
-
     def batch_name_input(self, value):
         # Setup [batch_name] widget and state
         batch_name = st.text_input(
             'Batch Name', value=value, key='batch_name')
         return batch_name
-    
+
     def product_model_input(self, value):
         # Setup [product_model] widget and state
         product_model = st.text_input(
             'Product Model', value=value, key='product_model')
         return product_model
-    
+
     def department_input(self, value):
         # Setup [department] widget and state
         department = st.text_input(
             'Department', value=value, key='department')
         return department
-    
 
     # Deprecated
+
     def init_session_state(self):
         if 'item_batch_count' not in st.session_state:
             st.session_state['item_batch_count'] = 0
